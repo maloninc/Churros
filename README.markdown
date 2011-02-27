@@ -11,6 +11,8 @@ Churros supports:
 - Detect offline or online mode
 - Automatic sync with server when your app is online
 
+You will see a live sample at <http://churros.heroku.com/>
+
 #Installation
 You can use the following Javascript library in your apps by copying them into your apps.
 
