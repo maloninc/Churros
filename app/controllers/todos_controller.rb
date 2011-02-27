@@ -4,6 +4,10 @@ class TodosController < ApplicationController
     headers['Content-Type'] = "text/cache-manifest"
     render :layout => false, :action => "todo.manifest"
   end
+  def todo.manifest
+    headers['Content-Type'] = "text/cache-manifest"
+    render :layout => false, :action => "todo.manifest"
+  end
 
   # GET /online
   def online
