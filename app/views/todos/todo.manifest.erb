@@ -1,0 +1,13 @@
+CACHE MANIFEST
+# Version : 1.0
+
+CACHE:
+<%- Dir::glob('./public/**/*').each do |file| -%>
+<%- if File::ftype(file) == 'file' -%>
+<%= file.sub('./public/','') %>
+<%- end -%>
+<%- end -%>
+
+NETWORK:
+todos.json
+online

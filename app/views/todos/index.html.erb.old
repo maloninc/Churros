@@ -1,0 +1,22 @@
+<h1>Listing todos</h1>
+
+<table>
+  <tr>
+    <th>Task</th>
+    <th>Done</th>
+  </tr>
+
+<% @todos.each do |todo| %>
+  <tr>
+    <td><%=h todo.task %></td>
+    <td><%=h todo.done %></td>
+    <td><%= link_to 'Show', todo %></td>
+    <td><%= link_to 'Edit', edit_todo_path(todo) %></td>
+    <td><%= link_to 'Destroy', todo, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New todo', new_todo_path %>

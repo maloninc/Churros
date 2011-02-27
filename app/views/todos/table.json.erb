@@ -1,0 +1,25 @@
+<%
+todos = Array.new
+Todo.all.each do |todo|
+  attrs = Array.new
+  todo.attribute_names.each do |attr|
+    if  attr != 'id'
+      if attr == 'created_at' or attr == 'updated_at'
+        attrs.push('"' + attr + '":"' + todo[attr].strftime('%Y-%m-%d %H:%M:%S') + '"')
+      else
+        attrs.push('"' + attr + '":"' + todo[attr].to_s + '"')
+      end
+    end
+  end
+  todos.push('"' + todo.id.to_s + '": {' + attrs.join(',') + '}')
+end
+
+%>
+
+
+{
+  "todos": {
+  <%= todos.join(',') -%>
+  }
+}
+

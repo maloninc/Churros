@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+        <title>Todos</title>
+        <style type="text/css" media="screen">@import "/jqtouch/jqtouch.min.css";</style>
+        <style type="text/css" media="screen">@import "/themes/apple/theme.min.css";</style>
+        <style type="text/css" media="screen">
+            ul li {
+                background-color: #ffeab1;
+                color: #000;
+                border-top: 1px solid #a2a14d;
+            }
+            ul li input[type="checkbox"] {
+                background-color: #e8a322;
+                border: 2px solid #e8a322;
+            }
+            ul li input[type="text"], ul li textarea {
+                background-color: #ffeab1;
+            }
+            textarea {
+                background-color: #e8a322;
+            }
+            .complete span {
+                text-decoration: line-through;
+            }
+            li small {
+                opacity: 0;
+                overflow: hidden;
+                width: 0 !important;
+                -webkit-transition: 250ms all ease-in-out;
+            }
+            .toolbar {
+                background: gray;
+                border: 0;
+                border-bottom: 1px solid #000;
+            }
+            body > .edgetoedge, body > * {
+                background: #ffeab1 none;
+            }
+            body .toolbar .btn2 {
+                -webkit-border-radius: 5px;
+                -webkit-border-image: none;
+                display: block;
+                background: rgba(40, 29, 25, .4) none !important;
+                padding: 6px;
+                border: 1px solid #372823;
+                float: left;
+                color: #fff;
+                -webkit-box-shadow: rgba(255,255,255, .4) 0 1px 0;
+                text-decoration: none;
+                position: absolute;
+                top: 5px;
+                right: 10px;
+                font-size: 13px;
+                text-shadow: #000 0 -1px 0;
+                display: inline;
+            }
+            .btn2.active {
+                background-color: rgba(0,0,0,.5);
+            }
+            .edgetoedge h4 {
+                border: 0;
+                background: gray;
+                color: #ffeab1;
+                border-bottom: 1px solid #9d7062;
+                border-top: 1px solid #9d7062;
+            }
+            ul .delete {
+                float: right;
+            }
+        </style>
+        <script src="/jqtouch/jquery.1.3.2.min.js" charset="utf-8"></script>
+        <script src="/jqtouch/jqtouch.min.js" charset="utf-8"></script>
+        <script src="/active_record.js" charset="utf-8"></script>
+        <script type="text/javascript" charset="utf-8">
+            var jQT = $.jQTouch({
+                icon: 'icon.png',
+                startupScreen: 'startup.png'
+            });
+            // Some sample Javascript functions:
+            $(function(){
+                function createDatabase() {
+                    if(!window.openDatabase) {
+                        return null;
+                    }
+                    var db = openDatabase('Todos', '1.0', 'Database for todos', 10000000);
+                    db.transaction(function(tx) {
+                        tx.executeSql('CREATE TABLE IF NOT EXISTS ' + 
+                                      'Todos("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, ' + 
+                                      '"task" varchar(255), "done" boolean, "dirty_flag" boolean, "updated_at" datetime);', []);
+                    });
+                    return db; 
+                }
+
+
+                function CH_create(obj, create_success){
+                    $.ajax({
+                      type: "POST",
+                      url: "/todos.json",
+                      data: ({ 
+                               "todo[task]" : obj['task'],
+                               "todo[done]" : obj['done'] 
+                             }),
+                      success: create_success,
+                      error: function(res) {
+                        alert('Error in CH_create');
+                      }
+                    });
+                }
+                function CH_delete(id){
+                    $.ajax({
+                      type: "DELETE",
+                      url: "/todos/" + id,
+                      error: function(res) {
+                        alert('Error in CH_delete');
+                      }
+                    });
+                }
+
+                function CH_updat(id, obj) {
+                    $.ajax({
+                      type: "PUT",
+                      url: "/todos/" + id,
+                      data: ({ 
+                               "todo[done]" : obj['checked']
+                             }),
+                      error: function(res) {
+                        alert('Error in CH_update');
+                      }
+                    });
+                }
+
+                function CH_read(read_success) {
+                  $.ajax({
+                    url: '/todos.json',
+                    type: 'GET',
+                    success: read_success,
+                    error: function(res) {
+                        alert('Error in CH_read');
+                    }
+                  });
+                }
+
+                function updateTodo() {
+                    var $el = $(this);
+                    var checked = $el.attr('checked');
+                    var id = $el.attr('id');
+                    if (checked) {
+                        $el.parent().prependTo('.complete');
+                    } else {
+                        $el.parent().appendTo('.incomplete');
+                    }
+                    var todo = {};
+                    todo['checked'] = checked;
+                    CH_update(id, todo);
+                }
+
+                function deleteTodo() {
+                    var $el = $(this);
+                    var id = $el.attr('id').replace(/del_/,'');
+                    CH_delete(id);
+                    $('#' + id).parent().remove();
+                }
+
+                function createTodo(){
+                    $el = $('#add form');
+                    if ($('#todo', $el).val().length > 1) {
+                        var todo = {}; 
+                        todo['task'] = $("#todo").val();
+                        todo['done'] = false;
+                        CH_create(todo, function(res){
+                           var obj = eval('obj=' + res + ';');
+                           var todo = obj.todo;
+                           $('#home .incomplete').append($('<li><input type="checkbox" id="' + todo.id + '"/> <span>' + todo.task +
+                                                 '</span><span class="delete"><input type="button" value="Delete" id="del_' + todo.id + '"/></span> </li>'));
+                        });
+                    }
+                    
+                    jQT.goBack();
+                    $el.get(0).reset();
+                    return false;
+                }
+
+                function readTodo(){
+                   CH_read(function(res) {
+                      var todos = eval(res);
+                      $.each(todos, function(i) {
+                          var todo = todos[i].todo;
+                          if(todo.done) {
+                              $("#complete").append('<li><input type="checkbox" checked id="' + todo.id + '" /><span>' + todo.task + 
+                                                 '</span><span class="delete"><input type="button" value="Delete" id="del_' + todo.id + '"/></span> </li>');
+                          } else {
+                              $("#incomplete").append('<li><input type="checkbox" id="' + todo.id + '" />' + todo.task + 
+                                                 '</span><span class="delete"><input type="button" value="Delete" id="del_' + todo.id + '"/></span> </li>');
+                          }
+                      });
+                   });
+                }
+
+                $('#add form').submit(createTodo);
+                $('#add .whiteButton').click(createTodo);
+                $('input[type="button"]').live('tap', deleteTodo);
+                $('input[type="button"]').live('click', deleteTodo);
+                $('input[type="checkbox"]').live('change', updateTodo);
+
+                readTodo();
+                createDatabase();
+            });
+        </script>
+    </head>
+    <body>
+        <div id="home" selected="true" class="edgetoedge form">
+            <div class="toolbar">
+                <h1>Todos</h1>
+                <a href="#add" class="btn2 slideup">Add</a>
+            </div>
+            <form>
+            <ul class="incomplete" id="incomplete"></ul>
+            <h4>Completed</h4>
+            <ul class="complete" id="complete"></ul>
+            </form>
+        </div>
+        <div id="add" class="edit">
+            <form>
+                <div class="toolbar">
+                    <h1>New Todo</h1>
+                    <a href="#" class="btn2 goback">Cancel</a>
+                </div>
+                <ul class="rounded">
+                    <li><input type="text" id="todo" name="task" placeholder="Enter your todo..." /></li>
+                </ul>
+                <a href="#" class="whiteButton" style="margin: 10px">Add</a>
+            </form>
+        </div>
+    </body>
+</html>

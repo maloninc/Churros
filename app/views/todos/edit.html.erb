@@ -1,0 +1,20 @@
+<h1>Editing todo</h1>
+
+<% form_for(@todo) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :task %><br />
+    <%= f.text_field :task %>
+  </p>
+  <p>
+    <%= f.label :done %><br />
+    <%= f.check_box :done %>
+  </p>
+  <p>
+    <%= f.submit 'Update' %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @todo %> |
+<%= link_to 'Back', todos_path %>

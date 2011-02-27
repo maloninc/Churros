@@ -1,0 +1,13 @@
+<p>
+  <b>Task:</b>
+  <%=h @todo.task %>
+</p>
+
+<p>
+  <b>Done:</b>
+  <%=h @todo.done %>
+</p>
+
+
+<%= link_to 'Edit', edit_todo_path(@todo) %> |
+<%= link_to 'Back', todos_path %>
