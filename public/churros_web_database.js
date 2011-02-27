@@ -45,7 +45,7 @@ Churros.AppCache= {
         applicationCache.oncached = function(){
             alert('Downloading app cache has finished');
         };
-        this.timeId = setInterval(function(){applicationCache.update();}, interval);
+        this.timeId = setInterval(function(){if(applicationCache.status = applicationCache.IDLE)applicationCache.update();}, interval);
     },
     endObserve: function(){
         clearInterval(this.timeId);
