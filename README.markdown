@@ -2,7 +2,7 @@
 Hiroyuki Nakamura <hiroyuki@maloninc.com>
 
 Churros is a Javascript library for sycing a local Web SQL Database with your server's database.
-It is based on ActiveJS library. You will see more information about ActiveJS at http://activerecordjs.org/
+It is based on ActiveJS library. You will see more information about ActiveJS at <http://activerecordjs.org/>
 This package includes a client software and a server software using Ruby on Rails. You can use Churros in
 your own apps by copying churros_active_record.js, churros_web_database.js in public directory.
 
@@ -18,7 +18,7 @@ You can use the following Javascript library in your apps by copying them into y
 - churros_web_database.js
 
 You need to modify your web server to reply JSON data in particular format.
-For more information about ActiveJS, see http://activerecordjs.org/ .
+For more information about ActiveJS, see <http://activerecordjs.org/>
 
 #Getting Started
 It is based on ActiveRecord in ActiveJS library, so you need to setup ActiveRecord object.
@@ -48,7 +48,7 @@ After that, Churros will automatically sync local DB and remote DB.
 		}
 	});
 
-For more information about ActiveJS, see http://activerecordjs.org/ .
+For more information about ActiveJS, see <http://activerecordjs.org/>
 
 #License
 This package is licensed under BSD License.
