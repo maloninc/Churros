@@ -32,13 +32,19 @@ var Churros = {};
 Churros.AppCache= {
     timeId: null,
     startObserve: function(interval){
-        applicationCache.addEventListener('updateready', function(){
+        applicationCache.ondownloading = function(){
+            alert('Start downloading app cache');
+        };
+        applicationCache.onupdateready = function(){
             if(confirm('Software update is available. Update now?')){
                 applicationCache.swapCache();
                 location.reload();
                 alert('Finish update!');
             }
-        }, false);
+        };
+        applicationCache.oncached = function(){
+            alert('Downloading app cache has finished');
+        };
         this.timeId = setInterval(function(){applicationCache.update();}, interval);
     },
     endObserve: function(){
